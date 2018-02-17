@@ -1,0 +1,12 @@
+doctype html
+html
+    head
+        link(rel='stylesheet', href='./style.sass')
+    body
+        .static Static
+        .laxe Vertical
+        .laxe(data-axis='x') Horizontal
+        .laxe(data-axis='both', data-speed='1.1') Both
+        script(src='../build/app.js')
+        script.
+            var laxe = new Laxe('.laxe');

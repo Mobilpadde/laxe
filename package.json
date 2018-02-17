@@ -1,0 +1,10 @@
+{
+  "name": "laxe",
+  "version": "0.0.1",
+  "description": "A simple, and easy to use, parallax library for any website",
+  "main": "index.js",
+  "repository": "https://github.com/Mobilpadde/laxe",
+  "author": "Mads Cordes <Mobilpadde@gmail.com>",
+  "license": "MIT",
+  "private": false
+}

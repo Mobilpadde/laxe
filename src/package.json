@@ -1,0 +1,20 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^7.2.6",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "node-sass": "^4.7.2",
+    "parcel-bundler": "^1.5.1",
+    "parcel-plugin-pug": "^0.2.5",
+    "postcss-modules": "^1.1.0"
+  },
+  "scripts": {
+    "watch": "parcel watch index.js -d ../build",
+    "build": "parcel build index.js -d ../build"
+  }
+}
