@@ -1,6 +1,6 @@
 {
   "name": "laxe",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A simple, and easy to use, parallax library for any website",
   "main": "index.js",
   "repository": "https://github.com/Mobilpadde/laxe",

@@ -1,16 +1,12 @@
-window.Laxe = (function () {
-    let o = {
-        speed: 1,
-        axis: 'y',
-    }
-
-    function findOffset(e) {
+window.laxe = {};
+window.laxe.helpers = {
+    findOffset: function findOffset(e) {
         let x = 0;
         let y = 0;
 
         const p = e.offsetParent;
         if (p != null && p !== 'body') {
-            const o = findOffset(p);
+            const o = window.laxe.helpers.findOffset(p);
 
             x += o.x;
             y += o.y;
@@ -21,8 +17,16 @@ window.Laxe = (function () {
 
         return { x, y };
     }
+}
+
+window.Laxe = (function Laxe() {
+    const o = {
+        speed: 1,
+        axis: 'y',
+    } 
 
     let elms = [];
+    let plugins = [];
     const preSetup = () => {
         elms = elms.map(elm => {
             const s = Object.keys(o).reduce((acc, k) => {
@@ -39,10 +43,18 @@ window.Laxe = (function () {
                 return acc;
             }, {});
 
-            s['_p'] = findOffset(elm);
+            s['_p'] = laxe.helpers.findOffset(elm);
 
             return { e: elm, s };
         });
+        
+        let ret = true;
+        plugins.forEach(p => {
+            ret = p.setup(elms);
+        });
+
+        return ret;
+
     }
 
     const setup = () => {
@@ -54,23 +66,27 @@ window.Laxe = (function () {
     }
 
     const move = (e) => {
+        let doMove = true;
         const y = e.deltaY;
+        plugins.forEach(p => doMove = p.move(y));
 
-        elms.forEach(elm => {
-            const a = elm.s.axis;
+        if (doMove) {
+            elms.forEach(elm => {
+                const a = elm.s.axis;
 
-            if (['x', 'y'].indexOf(a) > -1) {
-                elm.s._p[a] += y;
+                if (['x', 'y'].indexOf(a) > -1) {
+                    elm.s._p[a] += y;
 
-                elm.e.style[a === 'y' ? 'top' : 'left'] = `${elm.s._p[a] * elm.s.speed}px`;
-            } else {
-                elm.s._p.x += y;
-                elm.s._p.y += y;
+                    elm.e.style[a === 'y' ? 'top' : 'left'] = `${elm.s._p[a] * elm.s.speed}px`;
+                } else {
+                    elm.s._p.x += y;
+                    elm.s._p.y += y;
 
-                elm.e.style.left = `${elm.s._p.x * elm.s.speed}px`;
-                elm.e.style.top = `${elm.s._p.y * elm.s.speed}px`;
-            }
-        });
+                    elm.e.style.left = `${elm.s._p.x * elm.s.speed}px`;
+                    elm.e.style.top = `${elm.s._p.y * elm.s.speed}px`;
+                }
+            });
+        }
     }
 
     const touch = {};
@@ -80,26 +96,28 @@ window.Laxe = (function () {
         move(touch);
     }
 
-    return class Laxe {
-        constructor(thing) {
-            if (['.', '#'].indexOf(thing[0]) > -1) {
-                elms = [...document.querySelectorAll(thing)];
-                preSetup();
-                setup();
+    return function Laxe(thing, p) {
+        if (['.', '#'].indexOf(thing[0]) > -1) {
+            elms = [...document.querySelectorAll(thing)];
+            plugins = p || [];
 
-                window.addEventListener('mousewheel', move);
-                window.addEventListener('touchstart', touchStart);
-                window.addEventListener('touchend', touchEnd);
-            } else {
-                throw new Error('Please provide either a class or id using the corrsponding specifier')
+            if (preSetup(plugins)) {
+                setup();
             }
 
-        }
-
-        destroy() {
             window.addEventListener('mousewheel', move);
             window.addEventListener('touchstart', touchStart);
             window.addEventListener('touchend', touchEnd);
+        } else {
+            throw new Error('Please provide either a class or id using the corrsponding specifier')
         }
+
+        return {
+            destroy: () => {
+                window.addEventListener('mousewheel', move);
+                window.addEventListener('touchstart', touchStart);
+                window.addEventListener('touchend', touchEnd);
+            }
+        } 
     }
 }());
